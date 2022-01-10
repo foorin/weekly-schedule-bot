@@ -69,7 +69,7 @@ client.on("interactionCreate", async (interaction) => {
     return;
   }
 
-  const join = !participants.include(interaction.user.id);
+  const join = !participants.includes(interaction.user.id);
 
   const replaced = join
     ? (participants.some(p => p === interaction.user.id)

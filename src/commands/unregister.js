@@ -9,12 +9,7 @@ module.exports = {
       return;
     }
 
-    const result = await redis.del(message.channelId);
-
-    if (result !== "OK") {
-      message.channel.send("Woops, error.");
-      return;
-    }
+    await redis.del(message.channelId);
 
     message.channel.send("Unregistered this channel.");
   },

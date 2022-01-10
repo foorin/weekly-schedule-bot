@@ -63,9 +63,6 @@ client.on("interactionCreate", async (interaction) => {
       return;
     }
 
-    const join = component.style === "PRIMARY";
-    component.setStyle(join ? "DANGER" : "PRIMARY");
-
     const config = JSON.parse(await redis.get(interaction.channelId));
 
     if (!config) {
@@ -79,6 +76,8 @@ client.on("interactionCreate", async (interaction) => {
       interaction.reply("This schedule is done.");
       return;
     }
+
+    const join = participants.include(interaction.user.id);
 
     const replaced = join
       ? (participants.some(p => p === interaction.user.id)

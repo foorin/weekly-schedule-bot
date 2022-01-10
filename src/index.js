@@ -56,78 +56,69 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   const yyyymmdd = interaction.component.customId;
-  const components = interaction.message.components;
-  components.forEach(async (row) => {
-    const component = row.components.find(c => c.customId === yyyymmdd);
-    if (!component) {
-      return;
-    }
 
-    const config = JSON.parse(await redis.get(interaction.channelId));
+  const config = JSON.parse(await redis.get(interaction.channelId));
+  if (!config) {
+    interaction.reply("This channel is not registered.");
+    return;
+  }
 
-    if (!config) {
-      interaction.reply("Not registered channel.");
-      return;
-    }
+  const participants = config[yyyymmdd]?.participants;
+  if (!participants) {
+    interaction.reply("This schedule is done.");
+    return;
+  }
 
-    const participants = config[yyyymmdd]?.participants;
+  const join = !participants.include(interaction.user.id);
 
-    if (!participants) {
-      interaction.reply("This schedule is done.");
-      return;
-    }
+  const replaced = join
+    ? (participants.some(p => p === interaction.user.id)
+      ? participants
+      : [...participants, interaction.user.id]
+    )
+    : participants.filter(p => p !== interaction.user.id);
 
-    const join = participants.include(interaction.user.id);
+  const result = await redis.set(interaction.channelId, JSON.stringify({
+    ...config,
+    [yyyymmdd]: {
+      created: config[yyyymmdd]?.created,
+      participants: replaced,
+    },
+  }));
 
-    const replaced = join
-      ? (participants.some(p => p === interaction.user.id)
-        ? participants
-        : [...participants, interaction.user.id]
-      )
-      : participants.filter(p => p !== interaction.user.id);
+  if (result !== "OK") {
+    interaction.reply("Erorr");
+    return;
+  }
 
-    const result = await redis.set(interaction.channelId, JSON.stringify({
-      ...config,
-      [yyyymmdd]: {
-        created: config[yyyymmdd]?.created,
-        participants: replaced,
-      },
-    }));
+  const day = new Date(
+    yyyymmdd.substring(0, 4),
+    parseInt(yyyymmdd.substring(4, 6)) - 1,
+    yyyymmdd.substring(6, 8),
+  ).getDay();
 
-    if (result !== "OK") {
-      interaction.reply("Erorr");
-      return;
-    }
+  const field = embed.fields[day];
+  if (replaced.length === 0) {
+    field.value = "> -";
+  } else {
+    field.value = replaced.map(p => `> <@${p}>`).join("\n");
+  }
 
-    const day = new Date(
-      yyyymmdd.substring(0, 4),
-      parseInt(yyyymmdd.substring(4, 6)) - 1,
-      yyyymmdd.substring(6, 8),
-    ).getDay();
+  if (config[yyyymmdd].created) {
+    const thread = interaction.channel.threads.cache.get(config[yyyymmdd].created.threadId);
+    const message = thread.messages.cache.get(config[yyyymmdd].created.messageId);
+    await message?.edit(
+      replaced.length === 0
+        ? "参加者なし"
+        : replaced.map(p => `<@${p}>`).join(" ")
+    );
+  }
 
-    const field = embed.fields[day];
-    if (replaced.length === 0) {
-      field.value = "> -";
-    } else {
-      field.value = replaced.map(p => `> <@${p}>`).join("\n");
-    }
-
-    if (config[yyyymmdd].created) {
-      const thread = interaction.channel.threads.cache.get(config[yyyymmdd].created.threadId);
-      const message = thread.messages.cache.get(config[yyyymmdd].created.messageId);
-      await message?.edit(
-        replaced.length === 0
-          ? "参加者なし"
-          : replaced.map(p => `<@${p}>`).join(" ")
-      );
-    }
-
-    return interaction.update({
-      embeds: [
-        embed,
-      ],
-      components,
-    });
+  return interaction.update({
+    embeds: [
+      embed,
+    ],
+    components,
   });
 
 });

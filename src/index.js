@@ -81,7 +81,6 @@ client.on("interactionCreate", async (interaction) => {
   const result = await redis.set(interaction.channelId, JSON.stringify({
     ...config,
     [yyyymmdd]: {
-      created: config[yyyymmdd]?.created,
       participants: replaced,
     },
   }));
@@ -104,9 +103,9 @@ client.on("interactionCreate", async (interaction) => {
     field.value = replaced.map(p => `> <@${p}>`).join("\n");
   }
 
-  if (config[yyyymmdd].created) {
-    const thread = interaction.channel.threads.cache.get(config[yyyymmdd].created.threadId);
-    const message = thread.messages.cache.get(config[yyyymmdd].created.messageId);
+  if (config.created) {
+    const thread = interaction.channel.threads.cache.get(config.created.threadId);
+    const message = thread.messages.cache.get(config.created.messageId);
     await message?.edit(
       replaced.length === 0
         ? "参加者なし"

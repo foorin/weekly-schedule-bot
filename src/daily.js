@@ -29,6 +29,9 @@ client.on("ready", async () => {
       return;
     }
 
+    // delete yesterday.
+    await channel.threads.cache.get(config.created.threadId).del();
+
     const yyyymmdd = today.getFullYear() + dateToMMDD(today);
 
     const participants = config[yyyymmdd]?.participants ?? [];
@@ -51,10 +54,10 @@ client.on("ready", async () => {
       ...config,
       [yyyymmdd]: {
         ...config[yyyymmdd],
-        created: {
-          threadId: thread.id,
-          messageId: message.id,
-        },
+      },
+      created: {
+        threadId: thread.id,
+        messageId: message.id,
       },
     }));
   }));

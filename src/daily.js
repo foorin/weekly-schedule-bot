@@ -31,7 +31,7 @@ client.on("ready", async () => {
 
     // delete yesterday.
     if (config.created) {
-      await channel.threads.cache.get(config.created.threadId).delete();
+      await channel.threads.cache.get(config.created.threadId)?.delete();
     }
 
     const yyyymmdd = today.getFullYear() + dateToMMDD(today);

@@ -44,7 +44,11 @@ client.on("messageCreate", async (message) => {
     message.delete();
   } catch (error) {
     console.error(error);
-    message.reply("there was an error trying to execute that command.");
+    try {
+      message.reply("there was an error trying to execute that command.");
+    } catch {
+      // Suppresse error.
+    }
   }
 });
 
@@ -97,6 +101,7 @@ client.on("interactionCreate", async (interaction) => {
   ).getDay();
 
   const field = embed.fields[day];
+  field.name = `${field.name.split(" - ")[0]} - ${replaced.length}人`;
   if (replaced.length === 0) {
     field.value = "> -";
   } else {
@@ -105,7 +110,7 @@ client.on("interactionCreate", async (interaction) => {
 
   if (config.created) {
     const thread = interaction.channel.threads.cache.get(config.created.threadId);
-    const message = thread.messages.cache.get(config.created.messageId);
+    const message = thread?.messages.cache.get(config.created.messageId);
     await message?.edit(
       replaced.length === 0
         ? "参加者なし"

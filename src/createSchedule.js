@@ -25,7 +25,7 @@ module.exports = async (channel, title, description) => {
   }
   const fields = [...Array(7)].map((_, i) => {
     const field = {
-      name: `${baseDate.getMonth() + 1}/${baseDate.getDate()}(${weekDayJp[baseDate.getDay()]})`,
+      name: `${baseDate.getMonth() + 1}/${baseDate.getDate()}(${weekDayJp[baseDate.getDay()]}) - 0人`,
       value: "> -",
       inline: true,
     }

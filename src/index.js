@@ -29,7 +29,6 @@ client.once("ready", async () => {
     data.push(commands[commandName].data);
   }
   await client.application.commands.set(data);
-  console.log("ready");
 });
 
 const updateMember = async (interaction) => {

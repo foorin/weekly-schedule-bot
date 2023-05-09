@@ -17,11 +17,11 @@
   },
   "homepage": "https://github.com/foorin/weekly-schedule-bot#readme",
   "dependencies": {
-    "discord.js": "^13.5.1",
+    "discord.js": "^13.16.0",
     "dotenv": "^10.0.0",
-    "ioredis": "^4.28.2"
+    "ioredis": "^4.28.5"
   },
   "devDependencies": {
-    "eslint": "^8.6.0"
+    "eslint": "^8.40.0"
   }
 }

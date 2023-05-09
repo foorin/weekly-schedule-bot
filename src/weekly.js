@@ -31,7 +31,7 @@ client.on("ready", async () => {
     return createSchedule(channel, config.title, config.description);
   }));
   client.destroy();
-  process.exit(1);
+  process.exit(0);
 });
 
 client.login(process.env.TOKEN);

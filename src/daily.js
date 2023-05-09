@@ -64,7 +64,7 @@ client.on("ready", async () => {
     }));
   }));
   client.destroy();
-  process.exit(1);
+  process.exit(0);
 });
 
 client.login(process.env.TOKEN);
